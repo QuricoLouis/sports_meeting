@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+<!--        <meta name="renderer" content="webkit">-->
+<!--        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
+<!--        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />-->
+        <link rel="stylesheet" th:href="@{/X-admin/css/font.css}">
+        <link rel="stylesheet" th:href="@{/X-admin/css/xadmin.css}">
+        <script type="text/javascript" th:src="@{/X-admin/lib/layui/layui.js}" charset="utf-8"></script>
+        <script type="text/javascript" th:src="@{/X-admin/js/xadmin.js}"></script>
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+            <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+            <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+
+                <form class="layui-form" id="form-updGrade">
+                    <div class="layui-form-item">
+                        <label  class="layui-form-label">
+                            <span class="x-red">*</span>选手学号
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" readonly="readonly" name="stuId" required="" lay-verify="id" autocomplete="off" class="layui-input"
+                            th:value="${sportsScore.getStuId()}"
+                            ></div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>不可更改
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label  class="layui-form-label">
+                            <span class="x-red">*</span>项目编号
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" readonly="readonly" name="sportsIdScore" required="" lay-verify="sportsId" autocomplete="off" class="layui-input"
+                            th:value="${sportsScore.getSportsIdScore()}"></div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>不可更改
+                        </div>
+                    </div>
+
+
+
+                    <div class="layui-form-item">
+                        <label  class="layui-form-label">
+                            <span class="x-red">*</span>成绩</label>
+                        <div class="layui-input-inline">
+                            <input type="text"  name="grade" required="" lay-verify="required" autocomplete="off" class="layui-input"
+                            th:value="${sportsScore.getGrade()}"></div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label  class="layui-form-label">
+                            <span class="x-red">*</span>得分</label>
+                            <div class="layui-input-inline">
+                                <select name="score" class="valid">
+                                    <option th:selected="${sportsScore.getScore()==7}" value="7" name="score">7</option>
+                                    <option th:selected="${sportsScore.getScore()==5}" value="5" name="score">5</option>
+                                    <option th:selected="${sportsScore.getScore()==3}" value="3" name="score">3</option>
+                                    <option th:selected="${sportsScore.getScore()==2}" value="2" name="score">2</option>
+                                    <option th:selected="${sportsScore.getScore()==1}" value="1" name="score">1</option>
+                                </select>
+                            </div>
+
+                        <div class="layui-form-mid layui-word-aux">
+                        <span class="x-red">*</span>男子运动前五名得分7 5 3 2 1<br>
+                        <span class="x-red">*</span>女子运动前三名得分5 3 2
+                    </div>
+                    </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"></label>
+            <button class="layui-btn" lay-filter="upd" type="submit" lay-submit="" id="addGrade">修改</button>
+        </div>
+        </form>
+        </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+        <script type="text/javascript">
+        </script>
+        <script>
+            layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+
+
+                //监听提交
+                form.on('submit(upd)', function(data) {
+                    console.log(data);
+                    //发异步，把数据提交给后台
+                    $.ajax({
+                        async:false,
+                        url:"/admin/updScore",
+                        type:"POST",
+                        data:$("#form-updGrade").serialize(),
+                        success:function (result) {
+                           // console.log(result);
+                            //alert(result.extend.msg);
+                            layer.alert(result.extend.msg, {
+                                    icon: 6
+                                },
+                                function() {
+                                    // 获得frame索引
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    //关闭当前frame
+                                     parent.layer.close(index);
+                                    parent.location.reload();
+                                });
+
+                        }
+
+                    });
+                    return false;
+
+                });
+
+            });</script>
+
+    </body>
+
+</html>

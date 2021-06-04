@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xhu.mapper.SportsMapper">
+    <resultMap id="getSportsResultMap" type="com.xhu.pojo.Sports">
+        <id column="sports_id" jdbcType="INTEGER" property="sportsId" />
+        <result column="sports_name" jdbcType="VARCHAR" property="sportsName" />
+        <result column="sports_type" jdbcType="VARCHAR" property="sportsType" />
+        <result column="sports_number" jdbcType="INTEGER" property="sportsNumber" />
+        <result column="sports_time" jdbcType="VARCHAR" property="sportsTime" />
+        <result column="sports_place" jdbcType="VARCHAR" property="sportsPlace" />
+        <result column="sports_status" jdbcType="VARCHAR" property="sportsStatus" />
+        <result column="sports_referee" jdbcType="VARCHAR" property="sportsReferee" />
+    </resultMap>
+
+<!--    <resultMap id="entryFormResultMap" type="com.xhu.pojo.EntryForm">-->
+<!--        <result column="stu_id" jdbcType="INTEGER" property="stuId" />-->
+<!--            <association property="department" javaType="com.xhu.bean.Department">-->
+<!--                <id column="dept_id" property="deptId"></id>-->
+<!--                <result column="dept_name" property="deptName"></result>-->
+<!--            </association>-->
+<!--        <result column="d_id" jdbcType="INTEGER" property="dId" />-->
+<!--        &lt;!&ndash;使用联合查询出的部门字段的封装&ndash;&gt;-->
+<!--            <association property="department" javaType="com.xhu.bean.Department">-->
+<!--                <id column="dept_id" property="deptId"></id>-->
+<!--                <result column="dept_name" property="deptName"></result>-->
+<!--            </association>-->
+
+<!--    </resultMap>-->
+    <!--查询运动项目-->
+    <select id="querySports" resultType="Sports">
+        select * from sports
+    </select>
+    <!--查询运动项目根据id-->
+    <select id="querySportsById" resultType="Sports">
+        select * from sports where sports_id=#{sportsId}
+    </select>
+
+
+    <select id="querySportsName" resultType="Sports">
+        select distinct sports_name from sports
+    </select>
+
+    <!--带条件查询不带id-->
+    <select id="querySportsWithCondition" resultMap="getSportsResultMap">
+        select * from sports where 1=1
+        <if test="sportsName!=null and sportsName!=''">
+            and sports_name=#{sportsName}
+        </if>
+        <if test="sportsType!=null and sportsType!=''">
+            and sports_type=#{sportsType}
+        </if>
+    </select>
+
+    <!--添加赛事-->
+    <insert id="addSports" parameterType="com.xhu.pojo.Sports">
+        insert into sports
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sportsId != null">
+                sports_id,
+            </if>
+            <if test="sportsName != null">
+                sports_name,
+            </if>
+            <if test="sportsType != null">
+                sports_type,
+            </if>
+            <if test="sportsNumber != null">
+                sports_number,
+            </if>
+            <if test="sportsTime != null">
+                sports_time,
+            </if>
+            <if test="sportsPlace != null">
+                sports_place,
+            </if>
+            <if test="sportsStatus != null">
+                sports_status,
+            </if>
+            <if test="sportsReferee != null">
+                sports_referee,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sportsId != null">
+                #{sportsId,jdbcType=INTEGER},
+            </if>
+            <if test="sportsName != null">
+                #{sportsName,jdbcType=VARCHAR},
+            </if>
+            <if test="sportsType != null">
+                #{sportsType,jdbcType=VARCHAR},
+            </if>
+            <if test="sportsNumber != null">
+                #{sportsNumber,jdbcType=INTEGER},
+            </if>
+            <if test="sportsTime != null">
+                #{sportsTime,jdbcType=VARCHAR},
+            </if>
+            <if test="sportsPlace != null">
+                #{sportsPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="sportsStatus != null">
+                #{sportsStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="sportsReferee != null">
+                #{sportsReferee,jdbcType=VARCHAR},
+            </if>
+
+        </trim>
+    </insert>
+
+    <update id="updSports" parameterType="com.xhu.pojo.Sports">
+        update sports
+        <set>
+            <if test="sportsName != null">
+                sports_name = #{sportsName,jdbcType=VARCHAR},
+            </if>
+            <if test="sportsType != null">
+                sports_type = #{sportsType,jdbcType=VARCHAR},
+            </if>
+            <if test="sportsNumber != null">
+                sports_number = #{sportsNumber,jdbcType=INTEGER},
+            </if>
+            <if test="sportsTime != null">
+                sports_time = #{sportsTime,jdbcType=VARCHAR},
+            </if>
+            <if test="sportsPlace != null">
+                sports_place = #{sportsPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="sportsStatus != null">
+                sports_status = #{sportsStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="sportsReferee != null">
+                sports_referee = #{sportsReferee,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where sports_id = #{sportsId,jdbcType=INTEGER}
+    </update>
+
+    <delete id="delSportsById" parameterType="java.lang.Integer">
+    delete from sports
+    where sports_id = #{sportsId,jdbcType=INTEGER}
+  </delete>
+
+    <select id="querySportsType" resultType="Sports">
+        select distinct sports_type from sports
+    </select>
+
+    <select id="querySportsByType" resultType="Sports">
+        select  * from sports where sports_type=#{sportsType}
+    </select>
+
+    <!--查询报名表-->
+    <select id="entryForm" resultType="EntryForm">
+        select stu_id ,name,school,sports_id_entry,sports_name,sports_type from student a ,sports b,entry_form c
+where a.id=c.stu_id and b.sports_id=c.sports_id_entry
+    </select>
+
+    <!--带条件查询报名表 不带id-->
+    <select id="entryFormWithCondition" resultType="EntryForm">
+        select stu_id ,name,school,sports_id_entry,sports_name,sports_type from student a ,sports b,entry_form c
+        where a.id=c.stu_id and b.sports_id=c.sports_id_entry and 1=1
+        <if test="sportsName!=null and sportsName!=''">
+            and sports_name=#{sportsName}
+        </if>
+        <if test="sportsType!=null and sportsType!=''">
+            and sports_type=#{sportsType}
+        </if>
+    </select>
+    <!--查询学生是否报名了该项目-->
+    <select id="queryStuAndSports" resultType="com.xhu.pojo.EntryForm">
+        select * from entry_form where stu_id=#{stuId} and sports_id_entry=#{sportsIdEntry}
+    </select>
+    <!--查询学生是否该项目有成绩-->
+    <select id="queryStuScore" resultType="com.xhu.pojo.SportsScore">
+        select * from sports_score where stu_id=#{stuId} and sports_id_score=#{sportsIdScore}
+    </select>
+
+    <!--录入成绩-->
+    <insert id="addGrade" parameterType="com.xhu.pojo.SportsScore">
+        insert into sports_score
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">
+                stu_id,
+            </if>
+            <if test="sportsIdScore != null">
+                sports_id_score,
+            </if>
+            <if test="grade!= null">
+                grade,
+            </if>
+            <if test="score != null">
+                score,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">
+                #{stuId,jdbcType=INTEGER},
+            </if>
+            <if test="sportsIdScore != null">
+                #{sportsIdScore,jdbcType=INTEGER},
+            </if>
+            <if test="grade != null">
+                #{grade,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                #{score,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updSportsNumberAdd" parameterType="com.xhu.pojo.Sports">
+        update sports
+        <set>
+            <if test="sportsNumber != null">
+                sports_number = sports_number+1
+            </if>
+        </set>
+        where sports_id = #{sportsId,jdbcType=INTEGER}
+    </update>
+
+    <update id="updSportsNumberDes" parameterType="com.xhu.pojo.Sports">
+        update sports
+        <set>
+            <if test="sportsNumber != null">
+                sports_number = sports_number-1
+            </if>
+        </set>
+        where sports_id = #{sportsId,jdbcType=INTEGER}
+    </update>
+
+</mapper>

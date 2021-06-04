@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xhu.mapper.GradeMapper">
+    <resultMap id="WithStuAndSportsResultMap" type="com.xhu.pojo.SportsScoreDetails">
+        <id column="stu_id" jdbcType="INTEGER" property="stuId" />
+        <id column="sports_id_score" jdbcType="INTEGER" property="sportsIdScore" />
+        <result column="grade" jdbcType="VARCHAR" property="grade" />
+        <result column="score" jdbcType="INTEGER" property="score" />
+        <!--使用联合查询出的学生表-->
+        <association property="student" javaType="com.xhu.pojo.Student">
+            <id column="id" property="id"></id>
+            <result column="name" property="name"></result>
+            <result column="school" property="school"></result>
+            <result column="gender" property="gender"></result>
+        </association>
+        <!--使用联合查询出的项目表-->
+        <association property="sports" javaType="com.xhu.pojo.Sports">
+            <id column="sports_id" property="sportsId"></id>
+            <result column="sports_name" property="sportsName"></result>
+            <result column="sports_type" property="sportsType"></result>
+        </association>
+    </resultMap>
+
+    <resultMap id="PersonalScoreResultMap" type="com.xhu.pojo.PersonalScore">
+        <id column="stu_id" jdbcType="INTEGER" property="stuId" />
+        <result column="scoreAll" jdbcType="INTEGER" property="personalScore" />
+        <!--使用联合查询出的学生表-->
+        <association property="student" javaType="com.xhu.pojo.Student">
+            <id column="id" property="id"></id>
+            <result column="name" property="name"></result>
+            <result column="school" property="school"></result>
+            <result column="gender" property="gender"></result>
+            <result column="phone" property="phone"></result>
+            <result column="email" property="email"></result>
+        </association>
+    </resultMap>
+
+    <select id="selectWithStuAndSportsDefault" resultMap="WithStuAndSportsResultMap">
+        select
+        id ,name,school,gender,sports_id,sports_name,sports_type,grade,score
+        from student a ,sports b,sports_score c
+        where a.id=c.stu_id and b.sports_id=c.sports_id_score and sports_id=30001 ORDER BY score DESC
+    </select>
+
+    <select id="selectWithStuAndSports" resultMap="WithStuAndSportsResultMap">
+        select
+        id ,name,school,gender,sports_id,sports_name,sports_type,grade,score
+        from student a ,sports b,sports_score c
+        where a.id=c.stu_id and b.sports_id=c.sports_id_score and sports_id=#{sportsId} ORDER BY score DESC
+    </select>
+
+    <update id="updScore" parameterType="com.xhu.pojo.SportsScore">
+        update sports_score
+        <set>
+            <if test="grade != null">
+                grade = #{grade,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                score = #{score,jdbcType=INTEGER},
+            </if>
+        </set>
+        where stu_id=#{stuId,jdbcType=INTEGER} and sports_id_score = #{sportsIdScore,jdbcType=INTEGER}
+    </update>
+
+    <select id="getScoreAll" resultMap="WithStuAndSportsResultMap">
+        select
+        id ,name,school,gender,sports_id,sports_name,sports_type,grade,score
+        from student a ,sports b,sports_score c
+        where a.id=c.stu_id and b.sports_id=c.sports_id_score
+    </select>
+
+    <select id="getScoreAllWithCondition" resultMap="WithStuAndSportsResultMap">
+        select
+        id ,name,school,gender,sports_id,sports_name,sports_type,grade,score
+        from student a ,sports b,sports_score c
+        where a.id=c.stu_id and b.sports_id=c.sports_id_score
+        <if test="school!=null and school!=''">
+            and school=#{school}
+        </if>
+        <if test="gender!=null and gender!=''">
+            and gender=#{gender}
+        </if>
+    </select>
+
+    <select id="getScoreBySchoolAll" resultType="com.xhu.pojo.ScoreAll">
+        select school,sum(score) scoreAll
+        from student a ,sports b,sports_score c
+        where a.id=c.stu_id and b.sports_id=c.sports_id_score  GROUP BY school order by scoreAll DESC
+    </select>
+
+    <select id="getScoreBySchoolTypeAll" resultType="com.xhu.pojo.ScoreAll">
+         select school,sports_type,sum(score) scoreAll
+        from student a ,sports b,sports_score c
+        where a.id=c.stu_id and b.sports_id=c.sports_id_score and sports_type=#{sportsType}
+        GROUP BY school ORDER BY scoreAll DESC
+    </select>
+
+    <!--查询个人积分排名-->
+    <select id="getScoreBySchool" resultMap="PersonalScoreResultMap">
+        select id, name,gender,school,phone,email, sum(score) scoreAll from student a,sports_score b
+        where a.id=b.stu_id
+        GROUP BY id
+        order by scoreAll DESC
+    </select>
+
+    <!--查询个人积分排名   带条件-->
+    <select id="getScoreBySchoolWithCondition" resultMap="PersonalScoreResultMap">
+        select id, name,gender,school,phone,email, sum(score) scoreAll from student a,sports_score b
+        where a.id=b.stu_id
+        <if test="school!=null and school!=''">
+            and school=#{school}
+        </if>
+        <if test="gender!=null and gender!=''">
+            and gender=#{gender}
+        </if>
+        GROUP BY id
+        order by scoreAll DESC
+    </select>
+</mapper>

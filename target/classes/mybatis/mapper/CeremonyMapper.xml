@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xhu.mapper.CeremonyMapper">
+    
+    <select id="getCeremonyOpen" resultType="com.xhu.pojo.CeremonyOpen">
+        select * from ceremony_open
+    </select>
+
+    <select id="getCeremonyOpenById" resultType="com.xhu.pojo.CeremonyOpen">
+        select * from ceremony_open where ceremony_id=#{ceremonyId}
+    </select>
+
+    <!--添加开幕式-->
+    <insert id="addCeremonyOpen" parameterType="com.xhu.pojo.CeremonyOpen">
+        insert into ceremony_open
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ceremonyId != null">
+                ceremony_id,
+            </if>
+            <if test="ceremonyName != null">
+                ceremony_name,
+            </if>
+            <if test="ceremonyStartTime != null">
+                ceremony_start_time,
+            </if>
+            <if test="ceremonyEndTime != null">
+                ceremony_end_time,
+            </if>
+            <if test="ceremonyPlace != null">
+                ceremony_place,
+            </if>
+            <if test="ceremonyHost != null">
+                ceremony_host,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ceremonyId != null">
+                #{ceremonyId,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyName != null">
+                #{ceremonyName,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyStartTime != null">
+                #{ceremonyStartTime,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyEndTime != null">
+                #{ceremonyEndTime,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyPlace != null">
+                #{ceremonyPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyHost != null">
+                #{ceremonyHost,jdbcType=VARCHAR},
+            </if>
+
+
+        </trim>
+    </insert>
+
+    <update id="updCeremonyOpen" parameterType="com.xhu.pojo.CeremonyOpen">
+        update ceremony_open
+        <set>
+            <if test="ceremonyName != null">
+                ceremony_name = #{ceremonyName,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyStartTime != null">
+                ceremony_start_time = #{ceremonyStartTime,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyEndTime != null">
+                ceremony_end_time = #{ceremonyEndTime,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyPlace != null">
+                ceremony_place = #{ceremonyPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyHost != null">
+                ceremony_host = #{ceremonyHost,jdbcType=VARCHAR},
+            </if>
+
+        </set>
+        where ceremony_id = #{ceremonyId,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="delCeremonyOpen" parameterType="java.lang.String">
+    delete from ceremony_open
+    where ceremony_id = #{ceremonyId,jdbcType=VARCHAR}
+  </delete>
+
+
+    <select id="getCeremonyClose" resultType="com.xhu.pojo.CeremonyClose">
+        select * from ceremony_close
+    </select>
+
+    <select id="getCeremonyCloseById" resultType="com.xhu.pojo.CeremonyClose">
+        select * from ceremony_close where ceremony_id=#{ceremonyId}
+    </select>
+
+    <!--添加闭幕式-->
+    <insert id="addCeremonyClose" parameterType="com.xhu.pojo.CeremonyClose">
+        insert into ceremony_close
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ceremonyId != null">
+                ceremony_id,
+            </if>
+            <if test="ceremonyName != null">
+                ceremony_name,
+            </if>
+            <if test="ceremonyStartTime != null">
+                ceremony_start_time,
+            </if>
+            <if test="ceremonyEndTime != null">
+                ceremony_end_time,
+            </if>
+            <if test="ceremonyPlace != null">
+                ceremony_place,
+            </if>
+            <if test="ceremonyHost != null">
+                ceremony_host,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ceremonyId != null">
+                #{ceremonyId,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyName != null">
+                #{ceremonyName,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyStartTime != null">
+                #{ceremonyStartTime,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyEndTime != null">
+                #{ceremonyEndTime,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyPlace != null">
+                #{ceremonyPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyHost != null">
+                #{ceremonyHost,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updCeremonyClose" parameterType="com.xhu.pojo.CeremonyClose">
+        update ceremony_close
+        <set>
+            <if test="ceremonyName != null">
+                ceremony_name = #{ceremonyName,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyStartTime != null">
+                ceremony_start_time = #{ceremonyStartTime,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyEndTime != null">
+                ceremony_end_time = #{ceremonyEndTime,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyPlace != null">
+                ceremony_place = #{ceremonyPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="ceremonyHost != null">
+                ceremony_host = #{ceremonyHost,jdbcType=VARCHAR},
+            </if>
+
+        </set>
+        where ceremony_id = #{ceremonyId,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="delCeremonyClose" parameterType="java.lang.String">
+    delete from ceremony_close
+    where ceremony_id = #{ceremonyId,jdbcType=VARCHAR}
+  </delete>
+
+</mapper>

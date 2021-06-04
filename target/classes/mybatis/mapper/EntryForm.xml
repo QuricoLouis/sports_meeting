@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xhu.mapper.EntryFormMapper">
+    
+    <select id="getEntryFormById" resultType="com.xhu.pojo.EntryForm">
+        select * from entry_form where stu_id=#{stuId} and sports_id_entry=#{sportsIdEntry}
+    </select>
+
+    <!--学生报名-->
+    <insert id="toEntrySports" parameterType="com.xhu.pojo.EntryForm">
+        insert into entry_form
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">
+                stu_id,
+            </if>
+            <if test="sportsIdEntry != null">
+                sports_id_entry,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">
+                #{stuId,jdbcType=INTEGER},
+            </if>
+            <if test="sportsIdEntry != null">
+                #{sportsIdEntry,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getEntryFormByStuId" resultType="com.xhu.pojo.Sports">
+        select
+        sports_id ,sports_name,sports_type,sports_number,sports_time,sports_place,sports_status,sports_referee
+        from sports b,entry_form c
+        where b.sports_id=c.sports_id_entry  and stu_id=#{stuId}
+    </select>
+
+
+    <delete id="delEntryFormById" parameterType="java.lang.Integer">
+    delete from entry_form
+    where stu_id = #{stuId,jdbcType=INTEGER} and sports_id_entry=#{sportsIdEntry}
+  </delete>
+</mapper>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+<!--        <meta name="renderer" content="webkit">-->
+<!--        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
+<!--        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />-->
+        <link rel="stylesheet"  th:href="@{/X-admin/css/font.css}">
+        <link rel="stylesheet" th:href="@{/X-admin/css/xadmin.css}">
+        <script th:src="@{/X-admin/lib/layui/layui.js}" charset="utf-8"></script>
+        <script type="text/javascript" th:src="@{/X-admin/js/xadmin.js}"></script>
+    </head>
+    
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+                <a href="#">首页</a>
+                <a href="#">演示</a>
+                <a>
+                    <cite>导航元素</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+                <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+            </a>
+        </div>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            <form class="layui-form layui-col-space5" th:action="@{/admin/toEntryFormWithCondition/1}">
+
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <select name="sportsName">
+                                        <option value="" name="sportsName">项目名称</option>
+                                        <option  name="sportsName" th:each="sportsName:${sportsName}" th:text="${sportsName.getSportsName()}"
+                                              th:selected="${sports==sportsName.getSportsName()}"   th:value="${sportsName.getSportsName()}"></option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <select name="sportsType" th:value="${sportsType}=='M_sports'?'男子项目':'女子项目'" >
+                                        <option value="" name="sportsType" >项目类型</option>
+                                        <option value="M_sports" name="sportsType" th:selected="${sportsType=='M_sports'}">男子项目</option>
+                                        <option value="F_sports" name="sportsType" th:selected="${sportsType=='F_sports'}">女子项目</option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <button class="layui-btn" lay-submit="" lay-filter="sreach" type="submit">
+                                        <i class="layui-icon">&#xe615;</i></button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="layui-card-body ">
+                            <table class="layui-table layui-form" id="sports_table">
+                                <thead>
+                                    <tr>
+                                        <th>选手学号</th>
+                                        <th>选手姓名</th>
+                                        <th>学院</th>
+                                        <th>项目编号</th>
+                                        <th>项目名称</th>
+                                        <th>项目类型</th>
+                                        <th>操作</th>
+
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr th:each="sportsEntry:${pageInfo.list}">
+                                    <td style="color: blue" th:text="${sportsEntry.getStuId()}"></td>
+                                    <td style="color: blue" th:text="${sportsEntry.getName()}"></td>
+                                    <td th:text="${sportsEntry.getSchool()}"></td>
+                                    <td style="color: green" th:text="${sportsEntry.getSportsIdEntry()}"></td>
+                                    <td style="color: green" th:text="${sportsEntry.getSportsName()}"></td>
+                                    <td th:text="${sportsEntry.getSportsType()=='M_sports'?'男子项目':'女子项目'}"
+                                     th:value="${sportsEntry.getSportsType()}"></td>
+                                    <td>
+                                        <div class="layui-card-header">
+                                            <button id="toGradeAdd" class="layui-btn toGradeAdd" >
+                                                <i class="layui-icon"></i>录入成绩</button></div>
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>当前第[[${pageInfo.getPageNum()}]]页，总共[[${pageInfo.getPages()}]]页，总共[[${pageInfo.getTotal()}]]条记录</h3>
+                        <!--这里是分页信息--不带条件-->
+                        <div class="layui-card-body " th:if="${sign=='getSports'}">
+                            <div class="page">
+                                <a class="num" th:href="@{/admin/toEntryForm/1}" >首页</a>
+                                <inline th:if="${pageInfo.hasPreviousPage}"><!--如果存在前一页-->
+                                    <a class="prev" th:href="@{/admin/toEntryForm/}+${pageInfo.getPageNum()-1}">&lt;&lt;</a></inline>
+
+                                <inline th:each="page:${pageInfo.getNavigatepageNums()}">
+                                    <inline th:if="${page==pageInfo.getPageNum()}">
+                                        <span class="current" th:text="${pageInfo.getPageNum()}"></span>
+                                    </inline>
+                                    <inline th:if="${page!=pageInfo.getPageNum()}">
+                                        <a class="prev" th:text="${page}" th:href="@{/admin/toEntryForm/}+${page}"></a>
+                                    </inline>
+                                </inline>
+
+                                <inline th:if="${pageInfo.hasNextPage}"><!--如果存在后一页-->
+                                    <a class="next" th:href="@{/admin/toEntryForm/}+${pageInfo.getPageNum()+1}">&gt;&gt;</a></inline>
+                                <a class="num" th:href="@{/admin/toEntryForm/}+${pageInfo.getPages()}" >末页</a>
+                            </div>
+                        </div>
+
+                        <!--这里是分页信息--带条件-->
+                        <div class="layui-card-body " th:if="${sign=='querySportsWithCondition'}">
+                            <div class="page">
+                                <a class="num" th:href="@{/admin/toEntryFormWithCondition/1}" >首页</a>
+                                <inline th:if="${pageInfo.hasPreviousPage}"><!--如果存在前一页-->
+                                    <a class="prev" th:href="@{/admin/toEntryFormWithCondition/}+${pageInfo.getPageNum()-1}">&lt;&lt;</a></inline>
+
+                                <inline th:each="page:${pageInfo.getNavigatepageNums()}">
+                                    <inline th:if="${page==pageInfo.getPageNum()}">
+                                        <span class="current" th:text="${pageInfo.getPageNum()}"></span>
+                                    </inline>
+                                    <inline th:if="${page!=pageInfo.getPageNum()}">
+                                        <a class="prev" th:text="${page}" th:href="@{/admin/toEntryFormWithCondition/}+${page}"></a>
+                                    </inline>
+                                </inline>
+
+                                <inline th:if="${pageInfo.hasNextPage}"><!--如果存在后一页-->
+                                    <a class="next" th:href="@{/admin/toEntryFormWithCondition/}+${pageInfo.getPageNum()+1}">&gt;&gt;</a></inline>
+                                <a class="num" th:href="@{/admin/toEntryFormWithCondition/}+${pageInfo.getPages()}" >末页</a>
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+    </script>
+
+    <script>
+        $(".toGradeAdd").click(function () {
+            //layer.alert("点击事件");
+            var id= $(this).parents("tr").find("td:eq(0)").text();
+            var sportsId= $(this).parents("tr").find("td:eq(3)").text();
+            var sportsType= $(this).parents("tr").find("td:eq(5)").text();
+
+            //layer.alert(id+"-"+sportsId);
+            var idAndsportsId=id+"-"+sportsId+"-"+sportsType;
+            $(this).attr("onclick",xadmin.open('录入成绩','/admin/toAddGrade/'+idAndsportsId,500,600));
+        })
+
+        layui.use(['laydate', 'form'],
+        function() {
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#start' //指定元素
+            });
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#end' //指定元素
+            });
+        });
+
+        /*用户-删除*/
+
+        function member_del(obj, id) {
+            layer.confirm('确认要删除吗？',
+            function(index) {
+                //发异步删除数据
+                //$(obj).parents("tr").remove();
+
+                layer.alert('已删除!', {
+                    icon: 1,
+                    time: 1000
+                });
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2000);
+            });
+        }
+
+    </script>
+
+</html>

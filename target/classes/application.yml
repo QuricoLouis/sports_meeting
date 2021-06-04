@@ -1,0 +1,27 @@
+
+spring:
+  thymeleaf:
+    cache: true
+    prefix: classpath:/templates/
+    mode: HTML5
+  datasource:
+    username: root
+    password: lz980717
+    url: jdbc:mysql://localhost:3306/sports_meeting?serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+server:
+  port: 8080
+
+
+mybatis:
+  type-aliases-package: com.xhu.pojo
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql

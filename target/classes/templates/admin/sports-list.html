@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+<!--        <meta name="renderer" content="webkit">-->
+<!--        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
+<!--        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />-->
+        <link rel="stylesheet"  th:href="@{/X-admin/css/font.css}">
+        <link rel="stylesheet" th:href="@{/X-admin/css/xadmin.css}">
+        <script th:src="@{/X-admin/lib/layui/layui.js}" charset="utf-8"></script>
+        <script type="text/javascript" th:src="@{/X-admin/js/xadmin.js}"></script>
+    </head>
+    
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+                <a href="#">首页</a>
+                <a href="#">演示</a>
+                <a>
+                    <cite>导航元素</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+                <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+            </a>
+        </div>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            <form class="layui-form layui-col-space5" th:action="@{/admin/querySportsWithCondition/1}">
+
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <select name="sportsName">
+                                        <option value="" name="sportsName">项目名称</option>
+                                        <option th:each="sportsName:${sportsName}" th:text="${sportsName.getSportsName()}" th:selected="${sports==sportsName.getSportsName()}"
+                                                th:value="${sportsName.getSportsName()}" name="sportsName"></option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <select name="sportsType" th:value="${sportsType}=='M_sports'?'男子项目':'女子项目'">
+                                        <option value="" name="sportsType" >项目类型</option>
+                                        <option value="M_sports" name="sportsType" th:selected="${sportsType=='M_sports'}">男子项目</option>
+                                        <option value="F_sports" name="sportsType" th:selected="${sportsType=='F_sports'}">女子项目</option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <button class="layui-btn" lay-submit="" lay-filter="sreach" type="submit">
+                                        <i class="layui-icon">&#xe615;</i></button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-card-header">
+                            <button class="layui-btn" onclick="xadmin.open('添加赛事','/admin/toAddSports',500,600)">
+                                <i class="layui-icon"></i>添加赛事</button></div>
+                        <div class="layui-card-body ">
+                            <table class="layui-table layui-form" id="sports_table">
+                                <thead>
+                                    <tr>
+                                        <th>项目编号</th>
+                                        <th>项目名称</th>
+                                        <th>项目类型</th>
+                                        <th>参赛人数</th>
+                                        <th>开始时间</th>
+                                        <th>项目地点</th>
+                                        <th>项目状态</th>
+                                        <th>项目裁判</th>
+                                        <th>操作</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="sports:${pageInfo.list}">
+                                        <td th:text="${sports.getSportsId()}"></td>
+                                        <td th:text="${sports.getSportsName()}"></td>
+                                        <td th:text="${sports.getSportsType()=='M_sports'?'男子项目':'女子项目'}"></td>
+                                        <td th:text="${sports.getSportsNumber()}"></td>
+                                        <td th:text="${sports.getSportsTime()}"></td>
+                                        <td th:text="${sports.getSportsPlace()}"></td>
+
+                                        <inline th:if="${sports.getSportsStatus()=='已结束'}">
+                                            <td style="color: red" th:text="${sports.getSportsStatus()}"></td></inline>
+                                        <inline th:if="${sports.getSportsStatus()=='未开始'}">
+                                            <td style="color: green" th:text="${sports.getSportsStatus()}"></td></inline>
+
+                                        <td th:text="${sports.getSportsReferee()}"></td>
+
+                                        <td class="td-manage">
+                                            <a title="查看" class="updSports"  href="javascript:;" >
+                                                <i class="layui-icon">&#xe63c;</i></a>
+                                            <a title="删除" id="delSportById" class="delSports" onclick="member_del(this,'要删除的id')" href="javascript:;">
+                                                <i class="layui-icon">&#xe640;</i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>当前第[[${pageInfo.getPageNum()}]]页，总共[[${pageInfo.getPages()}]]页，总共[[${pageInfo.getTotal()}]]条记录</h3>
+                        <!--这里是分页信息--不带条件-->
+                        <div class="layui-card-body " th:if="${sign=='getSports'}">
+                            <div class="page">
+                                <a class="num" th:href="@{/admin/getSports/1}" >首页</a>
+                                <inline th:if="${pageInfo.hasPreviousPage}"><!--如果存在前一页-->
+                                    <a class="prev" th:href="@{/admin/getSports/}+${pageInfo.getPageNum()-1}">&lt;&lt;</a></inline>
+
+                                <inline th:each="page:${pageInfo.getNavigatepageNums()}">
+                                    <inline th:if="${page==pageInfo.getPageNum()}">
+                                        <span class="current" th:text="${pageInfo.getPageNum()}"></span>
+                                    </inline>
+                                    <inline th:if="${page!=pageInfo.getPageNum()}">
+                                        <a class="prev" th:text="${page}" th:href="@{/admin/getSports/}+${page}"></a>
+                                    </inline>
+                                </inline>
+
+                                <inline th:if="${pageInfo.hasNextPage}"><!--如果存在后一页-->
+                                    <a class="next" th:href="@{/admin/getSports/}+${pageInfo.getPageNum()+1}">&gt;&gt;</a></inline>
+                                <a class="num" th:href="@{/admin/getSports/}+${pageInfo.getPages()}" >末页</a>
+                            </div>
+                        </div>
+
+                        <!--这里是分页信息--带条件-->
+                        <div class="layui-card-body " th:if="${sign=='querySportsWithCondition'}">
+                            <div class="page">
+                                <a class="num" th:href="@{/admin/querySportsWithCondition/1}" >首页</a>
+                                <inline th:if="${pageInfo.hasPreviousPage}"><!--如果存在前一页-->
+                                    <a class="prev" th:href="@{/admin/querySportsWithCondition/}+${pageInfo.getPageNum()-1}">&lt;&lt;</a></inline>
+
+                                <inline th:each="page:${pageInfo.getNavigatepageNums()}">
+                                    <inline th:if="${page==pageInfo.getPageNum()}">
+                                        <span class="current" th:text="${pageInfo.getPageNum()}"></span>
+                                    </inline>
+                                    <inline th:if="${page!=pageInfo.getPageNum()}">
+                                        <a class="prev" th:text="${page}" th:href="@{/admin/querySportsWithCondition/}+${page}"></a>
+                                    </inline>
+                                </inline>
+
+                                <inline th:if="${pageInfo.hasNextPage}"><!--如果存在后一页-->
+                                    <a class="next" th:href="@{/admin/querySportsWithCondition/}+${pageInfo.getPageNum()+1}">&gt;&gt;</a></inline>
+                                <a class="num" th:href="@{/admin/querySportsWithCondition/}+${pageInfo.getPages()}" >末页</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+    </script>
+
+    <script>
+        $(".updSports").click(function () {
+            //layer.alert("点击事件");
+            var sportsId= $(this).parents("tr").find("td:eq(0)").text();
+            $(this).attr("onclick",xadmin.open('编辑','/admin/toUpdSports/'+sportsId,500,600));
+        })
+
+
+        layui.use(['laydate', 'form'],
+        function() {
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#start' //指定元素
+            });
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#end' //指定元素
+            });
+        });
+
+        /*用户-删除*/
+        $(".delSports").click(function () {
+            //layer.alert("点击事件");
+            var sportsId= $(this).parents("tr").find("td:eq(0)").text();
+            $(this).attr("onclick",member_del(this,sportsId));
+        })
+        var sportsId= $(this).parents("tr").find("td:eq(0)").text();
+        function member_del(obj, sportsId) {
+            layer.confirm('确认要删除吗？',
+            function(index) {
+                //发异步删除数据
+                //$(obj).parents("tr").remove();
+                $.ajax({
+                    url:"/admin/toDelSports/"+sportsId,
+                    type:"DELETE",
+                    success:function (result) {
+                        //$(obj).parents("tr").remove();
+                        layer.alert('已删除!', {
+                            icon: 1,
+                            time: 1000
+                        });
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 2000);
+                    }
+                })
+            });
+        }
+
+    </script>
+
+</html>

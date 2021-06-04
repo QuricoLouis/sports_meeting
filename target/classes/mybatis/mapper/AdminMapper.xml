@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xhu.mapper.AdminMapper">
+    
+    <select id="queryAdmin" resultType="Admin">
+        select * from admin
+    </select>
+
+    <select id="queryAdminById" resultType="Admin">
+        select * from admin where admin_id =#{id}
+    </select>
+
+    <update id="updAdmin" parameterType="com.xhu.pojo.Admin">
+        update admin
+        <set>
+            <if test="adminName != null">
+                admin_name = #{adminName,jdbcType=VARCHAR},
+            </if>
+            <if test="adminGender != null">
+                admin_gender = #{adminGender,jdbcType=VARCHAR},
+            </if>
+            <if test="adminAge != null">
+                admin_age = #{adminAge,jdbcType=INTEGER},
+            </if>
+            <if test="adminPhone != null">
+                admin_phone = #{adminPhone,jdbcType=VARCHAR},
+            </if>
+
+        </set>
+        where admin_id = #{adminId,jdbcType=INTEGER}
+    </update>
+
+    <update id="updAdminPass" parameterType="com.xhu.pojo.Admin">
+        update admin
+        <set>
+            <if test="adminPassword != null">
+                admin_password = #{adminPassword,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where admin_id = #{adminId,jdbcType=INTEGER}
+    </update>
+</mapper>

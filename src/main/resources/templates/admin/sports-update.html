@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+<!--        <meta name="renderer" content="webkit">-->
+<!--        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
+<!--        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />-->
+        <link rel="stylesheet" th:href="@{/X-admin/css/font.css}">
+        <link rel="stylesheet" th:href="@{/X-admin/css/xadmin.css}">
+        <script type="text/javascript" th:src="@{/X-admin/lib/layui/layui.js}" charset="utf-8"></script>
+        <script type="text/javascript" th:src="@{/X-admin/js/xadmin.js}"></script>
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]-->
+            <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+            <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <!--[endif]-->
+    </head>
+    
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+
+                <form class="layui-form" id="form-UpdSports">
+                    <input type="hidden"  name="sportsId" th:value="${sports.getSportsId()}">
+                    <div class="layui-form-item">
+                        <label  class="layui-form-label">
+                            <span class="x-red">*</span>项目名称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="sportsName" name="sportsName" th:value="${sports.getSportsName()}" required="" lay-verify="required" autocomplete="off" class="layui-input"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label  class="layui-form-label">
+                            <span class="x-red">*</span>项目类型</label>
+                        <div class="layui-input-inline">
+                            <select id="sportsType" name="sportsType" class="valid" >
+                                <option value="M_sports" th:selected="${sports.getSportsType()=='M_sports'}">男子项目</option>
+                                <option value="F_sports" th:selected="${sports.getSportsType()=='F_sports'}">女子项目</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label  class="layui-form-label">
+                            <span class="x-red">*</span>参赛人数</label>
+                        <div class="layui-input-inline">
+                            <input type="text" th:value="${sports.getSportsNumber()}"  readonly = "readonly" id="sportsNumber" name="sportsNumber" required="" lay-verify="required" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">
+                            <span class="x-red">*</span>开始时间</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="sportsTime" th:value="${sports.getSportsTime()}" name="sportsTime" required="" lay-verify="sportsTime" autocomplete="off" class="layui-input" placeholder="2020-05-01 14:00:00"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label  class="layui-form-label">
+                            <span class="x-red">*</span>项目地点</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="sportsPlace" th:value="${sports.getSportsPlace()}" name="sportsPlace" required="" lay-verify="required" autocomplete="off" class="layui-input"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label  class="layui-form-label">
+                            <span class="x-red">*</span>项目状态</label>
+                        <div class="layui-input-inline">
+                            <select id="sportsStatus" name="sportsStatus" class="valid">
+                                <option value="未开始" th:selected="${sports.getSportsStatus()=='未开始'}">未开始</option>
+                                <option value="已结束" th:selected="${sports.getSportsStatus()=='已结束'}">已结束</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label  class="layui-form-label">
+                            <span class="x-red">*</span>裁判</label>
+                        <div class="layui-input-inline">
+                            <select name="sportsReferee">
+                                <option name="sportsReferee" th:each="sportsReferee:${referee}" th:selected="${sports.getSportsReferee()==sportsReferee.getRefereeName()}"
+                                        th:text="${sportsReferee.getRefereeName()}" th:value="${sportsReferee.getRefereeName()}"></option>
+                               </select>
+                        </div>
+                    </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"></label>
+            <button class="layui-btn" lay-filter="upd" type="submit" lay-submit="">修改赛事</button></div>
+        </form>
+        </div>
+        </div>
+        <script>
+            layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+
+                //自定义验证规则
+                form.verify({
+                    nikename: function(value) {
+                        if (value.length < 5) {
+                            return '昵称至少得5个字符啊';
+                        }
+                    },
+                    sportsTime: [/^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])\s+(20|21|22|23|[0-1]\d):[0-5]\d:[0-5]\d$/, '时间格式不对(2020-05-01 14:00:00)'],
+
+                });
+
+                //监听提交
+                form.on('submit(upd)',
+                function(data) {
+                    console.log(data);
+                    //发异步，把数据提交给后台
+                    $.ajax({
+                        url:"/admin/updSports",
+                        type:"POST",
+                        data:$("#form-UpdSports").serialize(),
+                        success:function (result) {
+                            layer.alert("修改成功", {
+                                    icon: 6
+                                },
+                                function() {
+                                    // 获得frame索引
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    //关闭当前frame
+                                    parent.layer.close(index);
+                                    parent.location.reload();
+                                });
+                        }
+                    });
+
+                    return false;
+                });
+
+            });</script>
+    </body>
+
+</html>
